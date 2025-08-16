@@ -1,8 +1,8 @@
 package ilya.samoletov.Nonograms.image;
 
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -15,30 +15,24 @@ public class Editor {
     return pixelProcessing(image, ImageComponent::getAverage);
   }
 
+  public BufferedImage convertImageToMonochromeWithBinarization(BufferedImage image, int threshold, boolean inverted) {
+    return pixelProcessing(image, imageComponent -> imageComponent.getBinarization(threshold, inverted));
+  }
+
+
+  public BufferedImage scaleImage(BufferedImage image, double scale) {
+    if (scale == 1) {
+      return image;
+    }
+    return Scalr.resize(image, (int) (image.getWidth() / scale));
+  }
+
   private BufferedImage pixelProcessing(BufferedImage image, Function<ImageComponent, Integer> function) {
-    int height = image.getHeight();
-    int width = image.getWidth();
-    IntStream.range(0, height).forEach(y ->
-        IntStream.range(0, width).forEach(x ->
+    IntStream.range(0, image.getHeight()).forEach(y ->
+        IntStream.range(0, image.getWidth()).forEach(x ->
             image.setRGB(x, y, function.apply(new ImageComponent(image.getRGB(x, y))))
         )
     );
     return image;
-  }
-
-  public BufferedImage convertImageToMonochromeWithBinarization(BufferedImage image) {
-    return convertImageToMonochromeWithBinarization(image, DEFAULT_THRESHOLD);
-  }
-
-  public BufferedImage convertImageToMonochromeWithBinarization(BufferedImage image, boolean inverted) {
-    return convertImageToMonochromeWithBinarization(image, DEFAULT_THRESHOLD, inverted);
-  }
-
-  public BufferedImage convertImageToMonochromeWithBinarization(BufferedImage image, int threshold) {
-    return convertImageToMonochromeWithBinarization(image, threshold, false);
-  }
-
-  public BufferedImage convertImageToMonochromeWithBinarization(BufferedImage image, int threshold, boolean inverted) {
-    return pixelProcessing(image, imageComponent -> imageComponent.getBinarization(threshold, inverted));
   }
 }

@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 
-import static ilya.samoletov.Nonograms.image.Editor.DEFAULT_THRESHOLD;
-
 @Component
 @Slf4j
 public class EditorController {
@@ -34,21 +32,9 @@ public class EditorController {
     }
   }
 
-  public void convertImageToMonochromeWithBinarization(URL path, URL resultFolder) {
-    convertImageToMonochromeWithBinarization(path, resultFolder, DEFAULT_THRESHOLD);
-  }
-
-  public void convertImageToMonochromeWithBinarization(URL path, URL resultFolder, int threshold) {
-    convertImageToMonochromeWithBinarization(path, resultFolder, threshold, false);
-  }
-
-  public void convertImageToMonochromeWithBinarization(URL path, URL resultFolder, boolean inverted) {
-    convertImageToMonochromeWithBinarization(path, resultFolder, DEFAULT_THRESHOLD, inverted);
-  }
-
-  public void convertImageToMonochromeWithBinarization(URL path, URL resultFolder, int threshold, boolean inverted) {
+  public void convertImageToMonochromeWithScaleAndBinarization(URL path, URL resultFolder, int threshold, boolean inverted, double scale) {
     try {
-      writeImage(editor.convertImageToMonochromeWithBinarization(ImageIO.read(path), threshold, inverted), path, resultFolder, "binarization_%d_%s".formatted(threshold, inverted ? "inverted_" : ""));
+      writeImage(editor.convertImageToMonochromeWithBinarization(editor.scaleImage(ImageIO.read(path), scale), threshold, inverted), path, resultFolder, "binarization_%d_%s%.1f".formatted(threshold, inverted ? "inverted_" : "", scale));
     } catch (IOException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException(e);

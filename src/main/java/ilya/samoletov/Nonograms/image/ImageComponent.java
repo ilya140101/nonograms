@@ -33,4 +33,9 @@ public record ImageComponent(int red, int green, int blue) {
     }
     return convertToArgb(getLuminance() >= threshold ? white : black);
   }
+
+  @Override
+  public String toString() {
+    return "%d;%d;%d".formatted(red, green, blue);
+  }
 }

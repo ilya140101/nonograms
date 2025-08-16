@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.net.URL;
+import java.util.List;
 
 @SpringBootApplication
 @Slf4j
@@ -25,20 +26,18 @@ public class NonogramsApplication {
       EditorController editorController = ctx.getBean(EditorController.class);
       URL cat = getClass().getResource("/TestImage/cat.jpg");
       URL outputFolder = getClass().getResource("/TestImage");
-      editorController.convertImageToMonochrome(cat, outputFolder);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 255);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 192);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 64);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 32);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 16);
 
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 255, true);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 192, true);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, true);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 64, true);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 32, true);
-      editorController.convertImageToMonochromeWithBinarization(cat, outputFolder, 16, true);
+      editorController.convertImageToMonochrome(cat, outputFolder);
+
+      List.of(false, true).forEach(inverted ->
+          List.of(16, 32, 64, 128).forEach(threshold ->
+              List.of(1, 1.5, 2, 10, 20, 30).forEach(scale -> {
+                    editorController.convertImageToMonochromeWithScaleAndBinarization(cat, outputFolder, threshold, inverted, scale.doubleValue());
+                    log.info("write image: inverted - {}, threshold - {}, scale - {}", inverted, threshold, scale);
+                  }
+              )
+          )
+      );
     };
   }
 
